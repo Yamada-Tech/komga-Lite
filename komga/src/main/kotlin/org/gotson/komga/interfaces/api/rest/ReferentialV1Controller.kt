@@ -67,6 +67,22 @@ class ReferentialV1Controller(
       else -> referentialRepository.findAllGenres(principal.user.getAuthorizedLibraryIds(null))
     }
 
+  // Mihon/Tachiyomi 拡張（Keiyoushi repository）向け後方互換スタブ。
+  // 拡張は fetchFilterData() で publishers を含め全参照データを coroutineScope で一括取得するため、
+  // 404 にすると Publishers だけでなく Libraries/Genres/Tags/Collections/Authors フィルターまで
+  // まとめて失われる。publisher は 421d6344 で DB 列ごと削除済みなので空集合で応答する。
+  @GetMapping("publishers")
+  @Deprecated("Removed in this fork. Kept as an empty endpoint for Mihon extension compatibility.")
+  @Operation(
+    summary = "List publishers",
+    description = "Publisher metadata was removed in this fork, so this always returns an empty list.",
+    tags = [OpenApiConfiguration.TagNames.DEPRECATED],
+  )
+  fun getPublishers(
+    @RequestParam(name = "library_id", required = false) libraryIds: Set<String> = emptySet(),
+    @RequestParam(name = "collection_id", required = false) collectionId: String?,
+  ): Set<String> = emptySet()
+
   @GetMapping("tags")
   @Deprecated("Use GET /v2/tags instead")
   @Operation(summary = "List tags", description = "Use GET /v2/tags instead. Deprecated since 1.26.0", tags = [OpenApiConfiguration.TagNames.DEPRECATED])

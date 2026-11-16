@@ -38,6 +38,17 @@ data class SeriesMetadataDto(
   val summaryLock: Boolean,
   val readingDirection: String,
   val readingDirectionLock: Boolean,
+  // --- Mihon/Tachiyomi 拡張（Keiyoushi repository）向けの後方互換スタブ ---
+  // 拡張側は kotlinx.serialization でこれら upstream フィールドを「必須」として直列化するため、
+  // 応答から消すと MissingFieldException でシリーズ一覧が丸ごと表示不能になる
+  // （Required value 'publisher' is missing 等）。DB 列は 421d6344 で削除済みなので
+  // 空のプレースホルダとして返す。削除する場合は Mihon 拡張側の dto を確認すること。
+  val publisher: String = "",
+  val publisherLock: Boolean = false,
+  val ageRating: Int? = null,
+  val ageRatingLock: Boolean = false,
+  val language: String = "",
+  val languageLock: Boolean = false,
   val genres: Set<String>,
   val genresLock: Boolean,
   val tags: Set<String>,
